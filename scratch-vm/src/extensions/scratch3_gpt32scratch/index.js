@@ -76,7 +76,7 @@ class Scratch3Gpt3Blocks {
 
         const completionPromise = openai.createCompletion({
             model: "text-davinci-003",
-            prompt: `${question} \n\n\n と聞いている子供に対して、頼り甲斐のあるお兄さんが教えてあげる口調で答えてください。`,
+            prompt: `${question} \n\n と聞いている子供に対して、子供に適切な表現・内容で返答してください。`,
             temperature: 0,
             max_tokens: 1000,
             top_p: 1,
