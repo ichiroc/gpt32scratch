@@ -78,7 +78,7 @@ class Scratch3Gpt3Blocks {
             model: "text-davinci-003",
             prompt: `${question} \n\n と聞いている子供に対して、子供に適切な表現・内容で返答してください。`,
             temperature: 0,
-            max_tokens: 1000,
+            max_tokens: 300,
             top_p: 1,
             frequency_penalty: 0,
             presence_penalty: 0,
