@@ -1,8 +1,8 @@
 const { Configuration, OpenAIApi } = require('openai');
-const ArgumentType = require('scratch-vm/src/extension-support/argument-type');
-const BlockType = require('scratch-vm/src/extension-support/block-type');
-const Cast = require('scratch-vm/src/util/cast');
-const fetchWithTimeout = require('scratch-vm/src/util/fetch-with-timeout');
+const ArgumentType = require('../../extension-support/argument-type');
+const BlockType = require('../../extension-support/block-type');
+const Cast = require('../../util/cast');
+const fetchWithTimeout = require('../../util/fetch-with-timeout');
 // const log = require('../../util/log');
 
 
