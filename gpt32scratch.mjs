@@ -13335,11 +13335,39 @@ var Cast$1 = /*#__PURE__*/function () {
 }();
 var cast = Cast$1;
 
+/**
+ * Fetch a remote resource like `fetch` does, but with a time limit.
+ * @param {Request|string} resource Remote resource to fetch.
+ * @param {?object} init An options object containing any custom settings that you want to apply to the request.
+ * @param {number} timeout The amount of time before the request is canceled, in milliseconds
+ * @returns {Promise<Response>} The response from the server.
+ */
+var fetchWithTimeout$1 = function fetchWithTimeout(resource, init, timeout) {
+  var timeoutID = null;
+  // Not supported in Safari <11
+  var controller = window.AbortController ? new window.AbortController() : null;
+  var signal = controller ? controller.signal : null;
+  // The fetch call races a timer.
+  return Promise.race([fetch(resource, Object.assign({
+    signal: signal
+  }, init)).then(function (response) {
+    clearTimeout(timeoutID);
+    return response;
+  }), new Promise(function (resolve, reject) {
+    timeoutID = setTimeout(function () {
+      if (controller) controller.abort();
+      reject(new Error("Fetch timed out after ".concat(timeout, " ms")));
+    }, timeout);
+  })]);
+};
+var fetchWithTimeout_1 = fetchWithTimeout$1;
+
 var Configuration = dist.Configuration,
   OpenAIApi = dist.OpenAIApi;
 var ArgumentType = argumentType;
 var BlockType = blockType;
 var Cast = cast;
+var fetchWithTimeout = fetchWithTimeout_1;
 // const log = require('../../util/log');
 
 /**
@@ -13399,6 +13427,7 @@ var Scratch3Gpt3Blocks = /*#__PURE__*/function () {
   }, {
     key: "ask",
     value: function ask(args) {
+      var _this = this;
       if (this.apiKey === 'APIキー' || this.apiKey === '') {
         return 'openai.com のサイトからAPIキーを取得してセットください';
       }
@@ -13406,20 +13435,16 @@ var Scratch3Gpt3Blocks = /*#__PURE__*/function () {
       var configuration = new Configuration({
         apiKey: this.apiKey
       });
-      var openai = new OpenAIApi(configuration);
-      var completionPromise = openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: "".concat(question, " \n\n \u3068\u805E\u3044\u3066\u3044\u308B\u5B50\u4F9B\u306B\u5BFE\u3057\u3066\u3001\u5B50\u4F9B\u306B\u9069\u5207\u306A\u8868\u73FE\u30FB\u5185\u5BB9\u3067\u8FD4\u7B54\u3057\u3066\u304F\u3060\u3055\u3044\u3002"),
-        temperature: 0,
-        max_tokens: 300,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      }).then(function (response) {
-        return response.data.choices[0].text.replaceAll("\n", '');
+      new OpenAIApi(configuration);
+      var completionPromise = fetchWithTimeout('https:api.openai.com/v1/chat/completions', params, 10000).then(function (response) {
+        return response.json();
+      }).then(function (json) {
+        _this._lastAnswer = json.choices[0].message.content.replaceAll("\n", '');
+        _this._lastQuestion = question;
+        return _this._lastAnswer;
       }).catch(function (error) {
-        console.log(error);
-        return "\u5931\u6557\u3057\u3061\u3083\u3063\u305F\u307F\u305F\u3044\u3002\u7406\u7531\u306F\u3053\u308C\u3060\u3088\u300C".concat(error, "\u300D");
+        log.warn(error);
+        return "".concat(_this.i18n.answerFuncFailedToGetAnswer, " | ").concat(error);
       });
       return completionPromise;
     }
