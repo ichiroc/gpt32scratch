@@ -91,7 +91,7 @@ class Scratch3Gpt3Blocks {
             })
         }
 
-        const completionPromise = fetchWithTimeout('https:api.openai.com/v1/chat/completions', params, 10000)
+        const completionPromise = fetchWithTimeout('https://api.openai.com/v1/chat/completions', params, 10000)
             .then(response => response.json()
             ).then(json => {
                 this._lastAnswer = json.choices[0].message.content.replaceAll("\n", '')
