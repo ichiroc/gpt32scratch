@@ -83,12 +83,12 @@ class Scratch3Gpt3Blocks {
             frequency_penalty: 0,
             presence_penalty: 0,
         }).then(response => {
-          return(response.data.choices[0].text.replaceAll("\n", ''));
+            return (response.data.choices[0].text.replaceAll("\n", ''));
         }).catch(error => {
-          console.log(error);
-          return(`失敗しちゃったみたい。理由はこれだよ「${error}」`);
+            console.log(error);
+            return (`失敗しちゃったみたい。理由はこれだよ「${error}」`);
         });
-      return completionPromise;
+        return completionPromise
     }
 
     setApiKey () {

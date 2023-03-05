@@ -1,0 +1,34 @@
+name: Deploy GPT2Scratch
+
+on:
+  push:
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: LLK/scratch-gui
+          ref: develop
+      - run: npm install
+      - uses: actions/checkout@v3
+        with:
+          path: ./gpt32scratch
+      - run: sh ./gpt32scratch/install.sh
+      - run: NODE_OPTIONS=--openssl-legacy-provider npm run build
+      - name: npm install under gpt32scratch
+        run: npm install
+        working-directory: ./gpt32scratch
+      - name: Build gpt32scratch.mjs for xcratch
+        run: NODE_OPTIONS=--openssl-legacy-provider npm run build
+        working-directory: ./gpt32scratch
+      - name: Copy gpt32scratch.mjs to build folder
+        run: cp ./gpt32scratch/dist/gpt32scratch.mjs ./build
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./build
