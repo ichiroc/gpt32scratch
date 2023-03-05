@@ -74,34 +74,21 @@ class Scratch3Gpt3Blocks {
         });
         const openai = new OpenAIApi(configuration);
 
-        const params = {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    { "role": "system", "content": "You are a helpful assistant in the Scratch programming language." },
-                    { "role": "user", "content": question },
-                ],
-                max_tokens: 300,
-            })
-        }
-
-        const completionPromise = fetchWithTimeout('https://api.openai.com/v1/chat/completions', params, 10000)
-            .then(response => response.json()
-            ).then(json => {
-                this._lastAnswer = json.choices[0].message.content.replaceAll("\n", '')
-                this._lastQuestion = question
-                return (this._lastAnswer)
-            }).catch(error => {
-                log.warn(error);
-                return (`${this.i18n.answerFuncFailedToGetAnswer} | ${error}`);
-            });
-
-        return completionPromise;
+        const completionPromise = openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `${question} \n\n と聞いている子供に対して、子供に適切な表現・内容で返答してください。`,
+            temperature: 0,
+            max_tokens: 300,
+            top_p: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+        }).then(response => {
+            return (response.data.choices[0].text.replaceAll("\n", ''));
+        }).catch(error => {
+            console.log(error);
+            return (`失敗しちゃったみたい。理由はこれだよ「${error}」`);
+        });
+        return completionPromise
     }
 
     setApiKey () {
