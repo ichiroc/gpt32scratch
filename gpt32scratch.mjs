@@ -13436,6 +13436,24 @@ var Scratch3Gpt3Blocks = /*#__PURE__*/function () {
         apiKey: this.apiKey
       });
       new OpenAIApi(configuration);
+      var params = {
+        method: 'POST',
+        headers: {
+          'Authorization': "Bearer ".concat(this.apiKey),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{
+            "role": "system",
+            "content": "You are a helpful assistant in the Scratch programming language."
+          }, {
+            "role": "user",
+            "content": question
+          }],
+          max_tokens: 300
+        })
+      };
       var completionPromise = fetchWithTimeout('https:api.openai.com/v1/chat/completions', params, 10000).then(function (response) {
         return response.json();
       }).then(function (json) {
