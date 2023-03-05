@@ -80,6 +80,7 @@ class Scratch3Gpt3Blocks {
                 'Authorization': `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
             },
+            mode: 'cors',
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
                 messages: [
